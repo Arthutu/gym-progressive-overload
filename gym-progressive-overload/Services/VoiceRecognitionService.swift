@@ -20,7 +20,11 @@ class VoiceRecognitionService: NSObject {
     var error: String?
 
     func requestPermissions() async -> Bool {
-        let speechStatus = await SFSpeechRecognizer.requestAuthorization()
+        let speechStatus = await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in
+                continuation.resume(returning: status)
+            }
+        }
         guard speechStatus == .authorized else {
             error = "Speech recognition not authorized"
             return false
@@ -127,15 +131,9 @@ class VoiceRecognitionService: NSObject {
         if numbers.count >= 2 {
             // Check which number is mentioned with "pound" or "lbs"
             if lowercased.contains("pound") || lowercased.contains("lbs") || lowercased.contains("lb") {
-                // Find weight indicator position
-                let poundsRange = lowercased.range(of: "pound") ?? lowercased.range(of: "lbs") ?? lowercased.range(of: "lb")
-
-                // Find which number is closer to "pounds"
-                if let poundsRange = poundsRange {
-                    // Simple heuristic: first number is usually weight
-                    weight = numbers[0]
-                    reps = Int(numbers[1])
-                }
+                // Simple heuristic: first number is usually weight when weight units are mentioned
+                weight = numbers[0]
+                reps = Int(numbers[1])
             } else {
                 // No explicit weight indicator, assume first number is weight
                 weight = numbers[0]

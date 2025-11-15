@@ -40,7 +40,7 @@ struct VoiceInputView: View {
 
                         Image(systemName: voiceService.isRecording ? "waveform" : "mic.fill")
                             .font(.system(size: 60))
-                            .foregroundStyle(voiceService.isRecording ? .red.gradient : .blue.gradient)
+                            .foregroundStyle(voiceService.isRecording ? Color.red.gradient : Color.blue.gradient)
                     }
 
                     VStack(spacing: 12) {
