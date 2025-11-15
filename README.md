@@ -41,8 +41,9 @@ A native iOS app built with SwiftUI to track your gym workouts and monitor progr
 
 ### Project Structure
 ```
-GymTracker/
-├── GymTracker/
+gym-progressive-overload/
+├── gym-progressive-overload.xcodeproj
+├── gym-progressive-overload/
 │   ├── Models/
 │   │   ├── Models.swift              # SwiftData models
 │   │   └── ExerciseData.swift        # Exercise database
@@ -56,19 +57,30 @@ GymTracker/
 │   │   └── VoiceRecognitionService.swift
 │   ├── Utilities/
 │   │   └── GlassModifier.swift       # UI styling
+│   ├── GymTrackerWidget/
+│   │   ├── WorkoutLiveActivity.swift # Live Activity implementation
+│   │   ├── Info.plist
+│   │   └── Assets.xcassets
 │   ├── GymTrackerApp.swift
-│   └── ContentView.swift
-└── GymTrackerWidget/
-    ├── WorkoutLiveActivity.swift     # Live Activity implementation
-    └── Info.plist
+│   ├── ContentView.swift
+│   └── Assets.xcassets
+├── gym-progressive-overloadTests/
+└── gym-progressive-overloadUITests/
 ```
 
 ## Getting Started
 
 ### Installation
-1. Open `GymTracker/GymTracker.xcodeproj` in Xcode
+1. Open `gym-progressive-overload.xcodeproj` in Xcode
 2. Select your development team in Signing & Capabilities
-3. Build and run on your iOS device or simulator
+3. **Add Widget Extension Target** (for Live Activities):
+   - In Xcode, go to **File > New > Target**
+   - Select **Widget Extension**
+   - Name it **GymTrackerWidget**
+   - Make sure "Include Live Activity" is checked
+   - Add the `GymTrackerWidget/` folder to the new target
+   - Add `WorkoutLiveActivity.swift` to the widget target's build phases
+4. Build and run on your iOS device or simulator (iOS 17+)
 
 ### Permissions
 The app requires the following permissions:
@@ -151,8 +163,10 @@ Potential features for future versions:
 ```bash
 git clone <repository-url>
 cd gym-progressive-overload
-open GymTracker/GymTracker.xcodeproj
+open gym-progressive-overload.xcodeproj
 ```
+
+Then follow the Installation steps above to configure the project.
 
 ### Key Dependencies
 All dependencies are system frameworks (no external packages):
