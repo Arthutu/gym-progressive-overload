@@ -13,6 +13,6 @@ struct GymTrackerWidgetBundle: WidgetBundle {
     var body: some Widget {
         GymTrackerWidget()
         GymTrackerWidgetControl()
-        GymTrackerWidgetLiveActivity()
+        WorkoutLiveActivity()
     }
 }
