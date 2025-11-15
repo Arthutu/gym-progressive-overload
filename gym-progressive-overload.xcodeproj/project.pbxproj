@@ -64,7 +64,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				WorkoutLiveActivity.swift,
 			);
 			target = 36166C662EC9065900FF1455 /* GymTrackerWidgetExtension */;
 		};
