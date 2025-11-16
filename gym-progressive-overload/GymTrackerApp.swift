@@ -3,8 +3,12 @@ import SwiftData
 
 @main
 struct GymTrackerApp: App {
+    let authManager = AuthenticationManager()
+    let cloudKitManager = CloudKitManager()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
+            User.self,
             WorkoutSession.self,
             WorkoutSet.self
         ])
@@ -19,7 +23,10 @@ struct GymTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(
+                authManager: authManager,
+                cloudKitManager: cloudKitManager
+            )
         }
         .modelContainer(sharedModelContainer)
     }
