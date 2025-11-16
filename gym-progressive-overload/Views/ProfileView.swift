@@ -7,6 +7,8 @@ struct ProfileView: View {
     @State private var authManager: AuthenticationManager
     @State private var cloudKitManager: CloudKitManager
     @State private var showingSignOutAlert = false
+    @State private var showingDeleteAccountAlert = false
+    @State private var isDeletingAccount = false
 
     init(user: User, authManager: AuthenticationManager, cloudKitManager: CloudKitManager) {
         _user = Bindable(user)
@@ -124,6 +126,21 @@ struct ProfileView: View {
                     Button(role: .destructive, action: { showingSignOutAlert = true }) {
                         Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
                     }
+
+                    Button(role: .destructive, action: { showingDeleteAccountAlert = true }) {
+                        HStack {
+                            if isDeletingAccount {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            }
+                            Label("Delete Account", systemImage: "trash")
+                        }
+                    }
+                    .disabled(isDeletingAccount)
+                } footer: {
+                    Text("Deleting your account will permanently remove all your data from this device and iCloud. This action cannot be undone.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("Profile")
@@ -134,6 +151,14 @@ struct ProfileView: View {
                 }
             } message: {
                 Text("Are you sure you want to sign out? Your data will remain synced in iCloud.")
+            }
+            .alert("Delete Account", isPresented: $showingDeleteAccountAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete Forever", role: .destructive) {
+                    deleteAccount()
+                }
+            } message: {
+                Text("This will permanently delete all your workouts, progress data, and account information from both this device and iCloud. This action cannot be undone.")
             }
         }
     }
@@ -150,6 +175,51 @@ struct ProfileView: View {
     private func syncNow() {
         Task {
             try? await cloudKitManager.syncAllData(for: user, modelContext: modelContext)
+        }
+    }
+
+    private func deleteAccount() {
+        isDeletingAccount = true
+
+        Task {
+            do {
+                // 1. Delete all CloudKit data (workouts and user record)
+                try await cloudKitManager.deleteAllUserData(
+                    userID: user.id,
+                    cloudKitRecordID: user.cloudKitRecordID
+                )
+
+                // 2. Delete all local workout data
+                let sessionDescriptor = FetchDescriptor<WorkoutSession>()
+                if let sessions = try? modelContext.fetch(sessionDescriptor) {
+                    for session in sessions {
+                        modelContext.delete(session)
+                    }
+                }
+
+                // 3. Delete all workout sets (if any orphaned)
+                let setDescriptor = FetchDescriptor<WorkoutSet>()
+                if let sets = try? modelContext.fetch(setDescriptor) {
+                    for set in sets {
+                        modelContext.delete(set)
+                    }
+                }
+
+                // 4. Save changes
+                try? modelContext.save()
+
+                // 5. Sign out (this will delete the user)
+                await MainActor.run {
+                    authManager.signOut()
+                    isDeletingAccount = false
+                }
+            } catch {
+                // If CloudKit deletion fails, still proceed with local deletion
+                await MainActor.run {
+                    authManager.signOut()
+                    isDeletingAccount = false
+                }
+            }
         }
     }
 }

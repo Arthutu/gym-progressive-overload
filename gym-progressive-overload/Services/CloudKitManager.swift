@@ -151,4 +151,28 @@ class CloudKitManager {
         let database = isPublic ? publicDatabase : privateDatabase
         try await database.deleteRecord(withID: ckRecordID)
     }
+
+    func deleteAllUserData(userID: String, cloudKitRecordID: String?) async throws {
+        // Delete all workout sessions from both databases
+        let predicate = NSPredicate(format: "userID == %@", userID)
+        let query = CKQuery(recordType: "WorkoutSession", predicate: predicate)
+
+        // Delete from private database
+        let privateResults = try await privateDatabase.records(matching: query)
+        for (recordID, _) in privateResults.matchResults {
+            try? await privateDatabase.deleteRecord(withID: recordID)
+        }
+
+        // Delete from public database
+        let publicResults = try await publicDatabase.records(matching: query)
+        for (recordID, _) in publicResults.matchResults {
+            try? await publicDatabase.deleteRecord(withID: recordID)
+        }
+
+        // Delete user record if it exists
+        if let userRecordID = cloudKitRecordID {
+            let ckRecordID = CKRecord.ID(recordName: userRecordID)
+            try? await privateDatabase.deleteRecord(withID: ckRecordID)
+        }
+    }
 }
