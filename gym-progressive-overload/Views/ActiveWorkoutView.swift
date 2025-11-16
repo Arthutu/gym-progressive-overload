@@ -33,7 +33,7 @@ struct ActiveWorkoutView: View {
                             currentExerciseSection
                         }
 
-                        if !session.sets.isEmpty {
+                        if let sets = session.sets, !sets.isEmpty {
                             allSetsSection
                         }
                     }
@@ -98,7 +98,7 @@ struct ActiveWorkoutView: View {
             .onDisappear {
                 endLiveActivity()
             }
-            .onChange(of: session.sets.count) {
+            .onChange(of: session.sets?.count) {
                 updateLiveActivity()
             }
             .onOpenURL { url in
@@ -163,7 +163,7 @@ struct ActiveWorkoutView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
-                    let exerciseSets = session.sets.filter { $0.exerciseName == exercise.name }
+                    let exerciseSets = (session.sets ?? []).filter { $0.exerciseName == exercise.name }
                     if !exerciseSets.isEmpty {
                         VStack(spacing: 8) {
                             ForEach(exerciseSets.sorted(by: { $0.timestamp > $1.timestamp })) { set in
@@ -215,7 +215,7 @@ struct ActiveWorkoutView: View {
                 .font(.headline)
                 .foregroundColor(.secondary)
 
-            let groupedSets = Dictionary(grouping: session.sets, by: { $0.exerciseName })
+            let groupedSets = Dictionary(grouping: session.sets ?? [], by: { $0.exerciseName })
 
             ForEach(Array(groupedSets.keys.sorted()), id: \.self) { exerciseName in
                 if let sets = groupedSets[exerciseName] {
@@ -317,7 +317,7 @@ struct ActiveWorkoutView: View {
     private func getCurrentExerciseSets() -> [WorkoutActivityAttributes.ContentState.ExerciseSet] {
         guard let exercise = selectedExercise else { return [] }
 
-        return session.sets
+        return (session.sets ?? [])
             .filter { $0.exerciseName == exercise.name }
             .sorted { $0.timestamp > $1.timestamp }
             .map { set in

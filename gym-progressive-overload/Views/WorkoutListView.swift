@@ -209,8 +209,8 @@ struct WorkoutSessionCard: View {
             }
             .foregroundColor(.secondary)
 
-            if !session.sets.isEmpty {
-                let uniqueExercises = Array(Set(session.sets.map { $0.exerciseName })).prefix(3)
+            if let sets = session.sets, !sets.isEmpty {
+                let uniqueExercises = Array(Set(sets.map { $0.exerciseName })).prefix(3)
                 HStack(spacing: 8) {
                     ForEach(Array(uniqueExercises), id: \.self) { exercise in
                         Text(exercise)

@@ -122,13 +122,13 @@ struct WorkoutCardView: View {
             }
 
             // Recent exercises
-            if !workout.sets.isEmpty {
+            if let workoutSets = workout.sets, !workoutSets.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Exercises")
                         .font(.caption.bold())
                         .foregroundStyle(.secondary)
 
-                    ForEach(Array(Set(workout.sets.map { $0.exerciseName })).prefix(3), id: \.self) { exerciseName in
+                    ForEach(Array(Set(workoutSets.map { $0.exerciseName })).prefix(3), id: \.self) { exerciseName in
                         Text("• \(exerciseName)")
                             .font(.caption)
                     }

@@ -108,7 +108,7 @@ final class WorkoutSession {
     var isActive: Bool = true
 
     @Relationship(deleteRule: .cascade, inverse: \WorkoutSet.session)
-    var sets: [WorkoutSet] = []
+    var sets: [WorkoutSet]?
 
     // CloudKit
     var cloudKitRecordID: String?
@@ -133,11 +133,11 @@ final class WorkoutSession {
     }
 
     var totalSets: Int {
-        sets.count
+        sets?.count ?? 0
     }
 
     var exerciseCount: Int {
-        Set(sets.map { $0.exerciseName }).count
+        Set((sets ?? []).map { $0.exerciseName }).count
     }
 
     // Convert to CloudKit record

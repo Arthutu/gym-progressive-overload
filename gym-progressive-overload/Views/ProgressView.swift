@@ -9,7 +9,7 @@ struct ProgressView: View {
     @State private var selectedExercise: String?
 
     private var allExerciseNames: [String] {
-        let allSets = sessions.flatMap { $0.sets }
+        let allSets = sessions.flatMap { $0.sets ?? [] }
         return Array(Set(allSets.map { $0.exerciseName })).sorted()
     }
 
@@ -235,14 +235,14 @@ struct ProgressView: View {
     }
 
     private func getSetsFor(exercise: String) -> [WorkoutSet] {
-        sessions.flatMap { $0.sets }.filter { $0.exerciseName == exercise }
+        sessions.flatMap { $0.sets ?? [] }.filter { $0.exerciseName == exercise }
     }
 
     private func calculateSessionVolumes(for exercise: String) -> [(session: WorkoutSession, volume: Double)] {
         sessions
-            .filter { !$0.sets.filter { $0.exerciseName == exercise }.isEmpty }
+            .filter { !($0.sets ?? []).filter { $0.exerciseName == exercise }.isEmpty }
             .map { session in
-                let volume = session.sets
+                let volume = (session.sets ?? [])
                     .filter { $0.exerciseName == exercise }
                     .reduce(0.0) { $0 + ($1.weightLbs * Double($1.reps)) }
                 return (session, volume)
