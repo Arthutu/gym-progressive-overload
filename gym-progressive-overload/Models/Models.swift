@@ -35,11 +35,11 @@ struct ExerciseInfo: Identifiable, Hashable, Codable {
 // MARK: - Workout Set
 @Model
 final class WorkoutSet {
-    var id: UUID
-    var exerciseName: String
-    var reps: Int
-    var weightLbs: Double
-    var timestamp: Date
+    var id: UUID = UUID()
+    var exerciseName: String = ""
+    var reps: Int = 0
+    var weightLbs: Double = 0.0
+    var timestamp: Date = Date()
     var session: WorkoutSession?
 
     // CloudKit
@@ -102,13 +102,13 @@ final class WorkoutSet {
 // MARK: - Workout Session
 @Model
 final class WorkoutSession {
-    var id: UUID
-    var startTime: Date
+    var id: UUID = UUID()
+    var startTime: Date = Date()
     var endTime: Date?
-    var isActive: Bool
+    var isActive: Bool = true
 
     @Relationship(deleteRule: .cascade, inverse: \WorkoutSet.session)
-    var sets: [WorkoutSet]
+    var sets: [WorkoutSet] = []
 
     // CloudKit
     var cloudKitRecordID: String?

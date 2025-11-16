@@ -4,16 +4,16 @@ import CloudKit
 
 @Model
 final class User {
-    @Attribute(.unique) var id: String
-    var appleUserID: String
+    var id: String = UUID().uuidString
+    var appleUserID: String = ""
     var email: String?
-    var displayName: String
-    var createdAt: Date
+    var displayName: String = ""
+    var createdAt: Date = Date()
     var lastSyncedAt: Date?
 
     // Privacy settings
-    var profileIsPublic: Bool
-    var workoutsArePublic: Bool
+    var profileIsPublic: Bool = false
+    var workoutsArePublic: Bool = false
 
     // CloudKit
     var cloudKitRecordID: String?
