@@ -14,7 +14,7 @@ struct PublicWorkoutFeedView: View {
         NavigationStack {
             Group {
                 if isLoading {
-                    ProgressView("Loading public workouts...")
+                    SwiftUI.ProgressView("Loading public workouts...")
                 } else if let error = error {
                     ContentUnavailableView(
                         "Unable to Load",
@@ -91,7 +91,7 @@ struct WorkoutCardView: View {
 
                 Spacer()
 
-                if let endTime = workout.endTime {
+                if workout.endTime != nil {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Duration")
                             .font(.caption2)
