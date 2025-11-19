@@ -1,18 +1,16 @@
-//
-//  gym_progressive_overloadApp.swift
-//  gym-progressive-overload
-//
-//  Created by Arthur Rodolfo on 2025-11-15.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
-struct gym_progressive_overloadApp: App {
+struct GymTrackerApp: App {
+    let authManager = AuthenticationManager()
+    let cloudKitManager = CloudKitManager()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            User.self,
+            WorkoutSession.self,
+            WorkoutSet.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,7 +23,10 @@ struct gym_progressive_overloadApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(
+                authManager: authManager,
+                cloudKitManager: cloudKitManager
+            )
         }
         .modelContainer(sharedModelContainer)
     }
